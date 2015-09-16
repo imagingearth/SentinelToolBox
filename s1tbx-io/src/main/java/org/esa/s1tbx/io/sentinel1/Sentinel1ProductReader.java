@@ -152,8 +152,6 @@ public class Sentinel1ProductReader extends SARReader {
                                   final int destOffsetX, final int destOffsetY,
                                   int destWidth, int destHeight,
                                   final ImageIOFile.BandInfo bandInfo) throws IOException {
-
-        int length;
         int[] srcArray;
 
         //System.out.println(cache.stats()+", size="+cache.size());
@@ -170,14 +168,11 @@ public class Sentinel1ProductReader extends SARReader {
         DataCache.Data cachedData = cache.get(datakey);
         if (cachedData != null && cachedData.valid) {
             srcArray = cachedData.intArray;
-            length = srcArray.length;
         } else {
             cachedData = readRect(datakey, bandInfo,
                                   sourceOffsetX, sourceOffsetY, sourceStepX, sourceStepY,
                                   imgRect);
-
             srcArray = cachedData.intArray;
-            length = srcArray.length;
         }
 
         final short[] destArray = (short[]) destBuffer.getElems();
