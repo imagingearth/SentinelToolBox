@@ -69,7 +69,7 @@ public class ImageIOReader extends AbstractProductReader {
 
         final Product product = new Product(inputFile.getName(),
                 productType,
-                imgIOFile.getSceneWidth(), imgIOFile.getSceneHeight());
+                imgIOFile.getImageWidth(), imgIOFile.getImageHeight());
         product.setFileLocation(inputFile);
 
         int bandCnt = 1;
@@ -77,7 +77,7 @@ public class ImageIOReader extends AbstractProductReader {
 
             for (int b = 0; b < imgIOFile.getNumBands(); ++b) {
                 final Band band = new Band("band" + bandCnt++, imgIOFile.getDataType(),
-                        imgIOFile.getSceneWidth(), imgIOFile.getSceneHeight());
+                        imgIOFile.getImageWidth(), imgIOFile.getImageHeight());
                 product.addBand(band);
                 bandMap.put(band, new ImageIOFile.BandInfo(band, imgIOFile, i, b));
 
@@ -116,8 +116,8 @@ public class ImageIOReader extends AbstractProductReader {
 
         AbstractMetadata.setAttribute(absRoot, AbstractMetadata.PRODUCT, inputFile.getName());
         AbstractMetadata.setAttribute(absRoot, AbstractMetadata.PRODUCT_TYPE, productType);
-        AbstractMetadata.setAttribute(absRoot, AbstractMetadata.num_samples_per_line, imgIOFile.getSceneWidth());
-        AbstractMetadata.setAttribute(absRoot, AbstractMetadata.num_output_lines, imgIOFile.getSceneHeight());
+        AbstractMetadata.setAttribute(absRoot, AbstractMetadata.num_samples_per_line, imgIOFile.getImageWidth());
+        AbstractMetadata.setAttribute(absRoot, AbstractMetadata.num_output_lines, imgIOFile.getImageHeight());
 
         AbstractMetadataIO.loadExternalMetadata(product, absRoot, inputFile);
     }

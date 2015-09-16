@@ -47,8 +47,8 @@ import java.util.Iterator;
 public class ImageIOFile {
 
     private final String name;
-    private int sceneWidth = 0;
-    private int sceneHeight = 0;
+    private int imgWidth = 0;
+    private int imgHeight = 0;
     private int dataType;
     private int numImages = 1;
     private int numBands = 1;
@@ -211,18 +211,18 @@ public class ImageIOFile {
             reader.dispose();
     }
 
-    public int getSceneWidth() throws IOException {
-        if (sceneWidth == 0) {
-            sceneWidth = reader.getWidth(0);
+    public int getImageWidth() throws IOException {
+        if (imgWidth == 0) {
+            imgWidth = reader.getWidth(0);
         }
-        return sceneWidth;
+        return imgWidth;
     }
 
-    public int getSceneHeight() throws IOException {
-        if (sceneHeight == 0) {
-            sceneHeight = reader.getHeight(0);
+    public int getImageHeight() throws IOException {
+        if (imgHeight == 0) {
+            imgHeight = reader.getHeight(0);
         }
-        return sceneHeight;
+        return imgHeight;
     }
 
     public int getDataType() {

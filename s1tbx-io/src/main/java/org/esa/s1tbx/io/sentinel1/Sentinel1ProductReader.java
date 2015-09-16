@@ -156,9 +156,16 @@ public class Sentinel1ProductReader extends SARReader {
         int length;
         int[] srcArray;
 
-        //System.out.println(cache.stats()+", size="+cache.size());
+        System.out.println(cache.stats()+", size="+cache.size());
 
-        final Rectangle destRect = new Rectangle(destOffsetX, destOffsetY, destWidth, destHeight);
+        final int imgWidth = bandInfo.img.getImageWidth();
+        final int imgheight = bandInfo.img.getImageHeight();
+        final Rectangle destRect = new Rectangle(destOffsetX, destOffsetY,
+                                                 Math.min(destWidth, imgWidth - destOffsetX),
+                                                 Math.min(destHeight, imgheight - destOffsetY));
+        if(destRect.width <= 0 || destRect.height <= 0)
+            return;
+
         final DataCache.DataKey datakey = new DataCache.DataKey(bandInfo.img, destRect);
         DataCache.Data cachedData = cache.get(datakey);
         if (cachedData != null && cachedData.valid) {
@@ -179,7 +186,8 @@ public class Sentinel1ProductReader extends SARReader {
                 //System.arraycopy(srcArray, 0, destArray, 0, length);
                 int i = 0;
                 for (int srcVal : srcArray) {
-                    destArray[i++] = (short) srcVal;
+                    if(i < destRect.width)
+                        destArray[i++] = (short) srcVal;
                 }
             } else {
                 for (int i = 0; i < length; i += sourceStepX) {
@@ -190,7 +198,8 @@ public class Sentinel1ProductReader extends SARReader {
             if (sourceStepX == 1) {
                 int i = 0;
                 for (int srcVal : srcArray) {
-                    destArray[i++] = (short) (srcVal >> 16);
+                    if(i < destRect.width)
+                        destArray[i++] = (short) (srcVal >> 16);
                 }
             } else {
                 for (int i = 0; i < length; i += sourceStepX) {

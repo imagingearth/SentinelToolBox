@@ -180,7 +180,7 @@ public class TerraSarXProductReader extends SARReader {
                     sourceOffsetY % sourceStepY);
 
             final RenderedImage image = reader.readAsRenderedImage(0, param);
-            Rectangle rect = new Rectangle(destOffsetX, Math.max(0, img.getSceneHeight() - destOffsetY - destHeight),
+            Rectangle rect = new Rectangle(destOffsetX, Math.max(0, img.getImageHeight() - destOffsetY - destHeight),
                     destWidth, destHeight);
             data = image.getData(rect);
         }
@@ -223,7 +223,7 @@ public class TerraSarXProductReader extends SARReader {
                     sourceOffsetY % sourceStepY);
 
             final RenderedImage image = reader.readAsRenderedImage(0, param);
-            data = image.getData(new Rectangle(Math.max(0, img.getSceneWidth() - destOffsetX - destWidth),
+            data = image.getData(new Rectangle(Math.max(0, img.getImageWidth() - destOffsetX - destWidth),
                     destOffsetY, destWidth, destHeight));
         }
 

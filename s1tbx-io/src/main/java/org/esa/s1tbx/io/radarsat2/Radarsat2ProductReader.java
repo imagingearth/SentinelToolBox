@@ -230,11 +230,11 @@ public class Radarsat2ProductReader extends SARReader {
             if (flipToSARGeometry) {
                 if (isAntennaPointingRight) { // flip the image up side down
                     data = image.getData(new Rectangle(destOffsetX,
-                            Math.max(0, img.getSceneHeight() - destOffsetY - destHeight),
+                            Math.max(0, img.getImageHeight() - destOffsetY - destHeight),
                             destWidth, destHeight));
                 } else { // flip the image upside down, then flip it left to right
-                    data = image.getData(new Rectangle(Math.max(0, img.getSceneWidth() - destOffsetX - destWidth),
-                            Math.max(0, img.getSceneHeight() - destOffsetY - destHeight),
+                    data = image.getData(new Rectangle(Math.max(0, img.getImageWidth() - destOffsetX - destWidth),
+                            Math.max(0, img.getImageHeight() - destOffsetY - destHeight),
                             destWidth, destHeight));
                 }
             } else {
@@ -295,7 +295,7 @@ public class Radarsat2ProductReader extends SARReader {
 
             final RenderedImage image = reader.readAsRenderedImage(0, param);
             if (flipToSARGeometry && isAntennaPointingRight) {  // flip the image left to right
-                data = image.getData(new Rectangle(Math.max(0, img.getSceneWidth() - destOffsetX - destWidth),
+                data = image.getData(new Rectangle(Math.max(0, img.getImageWidth() - destOffsetX - destWidth),
                         destOffsetY, destWidth, destHeight));
             } else {
                 data = image.getData(new Rectangle(destOffsetX, destOffsetY, destWidth, destHeight));

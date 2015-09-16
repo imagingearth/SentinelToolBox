@@ -58,6 +58,8 @@ public class Sentinel1Level1Directory extends XMLProductDirectory implements Sen
     private final Map<Band, TiePointGeoCoding> bandGeocodingMap = new HashMap<>(5);
     private final transient Map<String, String> imgBandMetadataMap = new HashMap<>(4);
     private String acqMode = "";
+    private int largestBandWidth;
+    private int largestBandHeight;
 
     private static final DateFormat standardDateFormat = ProductData.UTC.createDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -108,8 +110,12 @@ public class Sentinel1Level1Directory extends XMLProductDirectory implements Sen
             final MetadataElement bandMetadata = absRoot.getElement(imgBandMetadataMap.get(imgName));
             final String swath = bandMetadata.getAttributeString(AbstractMetadata.swath);
             final String pol = bandMetadata.getAttributeString(AbstractMetadata.polarization);
-            final int width = bandMetadata.getAttributeInt(AbstractMetadata.num_samples_per_line);
-            final int height = bandMetadata.getAttributeInt(AbstractMetadata.num_output_lines);
+
+            //final int width = bandMetadata.getAttributeInt(AbstractMetadata.num_samples_per_line);
+            //final int height = bandMetadata.getAttributeInt(AbstractMetadata.num_output_lines);
+            // total scene width and height
+            final int width = largestBandWidth;
+            final int height = largestBandHeight;
 
             String tpgPrefix = "";
             String suffix = pol;
@@ -292,7 +298,9 @@ public class Sentinel1Level1Directory extends XMLProductDirectory implements Sen
     }
 
     private void determineProductDimensions(final MetadataElement absRoot) throws IOException {
-        int totalWidth = 0, maxHeight = 0, k = 0;
+        int totalWidth = 0, k = 0;
+        largestBandWidth = 0;
+        largestBandHeight = 0;
         String pol = null;
         for (Map.Entry<String, ImageIOFile> stringImageIOFileEntry : bandImageFileMap.entrySet()) {
             final ImageIOFile img = stringImageIOFileEntry.getValue();
@@ -313,14 +321,17 @@ public class Sentinel1Level1Directory extends XMLProductDirectory implements Sen
             int width = bandMetadata.getAttributeInt(AbstractMetadata.num_samples_per_line);
             int height = bandMetadata.getAttributeInt(AbstractMetadata.num_output_lines);
             totalWidth += width;
-            if (height > maxHeight) {
-                maxHeight = height;
+            if (width > largestBandWidth) {
+                largestBandWidth = width;
+            }
+            if (height > largestBandHeight) {
+                largestBandHeight = height;
             }
         }
 
         if (isSLC() && isTOPSAR()) {  // approximate does not account for overlap
             absRoot.setAttributeInt(AbstractMetadata.num_samples_per_line, totalWidth);
-            absRoot.setAttributeInt(AbstractMetadata.num_output_lines, maxHeight);
+            absRoot.setAttributeInt(AbstractMetadata.num_output_lines, largestBandHeight);
         }
     }
 
