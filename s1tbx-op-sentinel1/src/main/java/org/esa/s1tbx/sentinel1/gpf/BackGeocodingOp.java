@@ -763,7 +763,7 @@ public final class BackGeocodingOp extends Operator {
             return;
         }
 
-        final String sSubSwathName = acquisitionMode + sBurstIndex;
+        final String sSubSwathName = acquisitionMode + subSwathIndex;
         for (String sPol : sPolarizations) {
 
             final Band slaveBandI = getBand(slaveProduct, "i_", sSubSwathName, sPol);
