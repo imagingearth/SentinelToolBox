@@ -152,62 +152,66 @@ public class Sentinel1ProductReader extends SARReader {
                                   final int destOffsetX, final int destOffsetY,
                                   int destWidth, int destHeight,
                                   final ImageIOFile.BandInfo bandInfo) throws IOException {
-        int[] srcArray;
+        try {
+            int[] srcArray;
 
-        //System.out.println(cache.stats()+", size="+cache.size());
+            //System.out.println(cache.stats()+", size="+cache.size());
 
-        final int imgWidth = bandInfo.img.getImageWidth();
-        final int imgheight = bandInfo.img.getImageHeight();
-        final Rectangle imgRect = new Rectangle(destOffsetX, destOffsetY,
-                                                 Math.min(destWidth, imgWidth - destOffsetX),
-                                                 Math.min(destHeight, imgheight - destOffsetY));
-        if(imgRect.width <= 0 || imgRect.height <= 0)
-            return;
+            final int imgWidth = bandInfo.img.getImageWidth();
+            final int imgheight = bandInfo.img.getImageHeight();
+            final Rectangle imgRect = new Rectangle(destOffsetX, destOffsetY,
+                    Math.min(destWidth, imgWidth - destOffsetX),
+                    Math.min(destHeight, imgheight - destOffsetY));
+            if (imgRect.width <= 0 || imgRect.height <= 0)
+                return;
 
-        final DataCache.DataKey datakey = new DataCache.DataKey(bandInfo.img, imgRect);
-        DataCache.Data cachedData = cache.get(datakey);
-        if (cachedData != null && cachedData.valid) {
-            srcArray = cachedData.intArray;
-        } else {
-            cachedData = readRect(datakey, bandInfo,
-                                  sourceOffsetX, sourceOffsetY, sourceStepX, sourceStepY,
-                                  imgRect);
-            srcArray = cachedData.intArray;
-        }
+            final DataCache.DataKey datakey = new DataCache.DataKey(bandInfo.img, imgRect);
+            DataCache.Data cachedData = cache.get(datakey);
+            if (cachedData != null && cachedData.valid) {
+                srcArray = cachedData.intArray;
+            } else {
+                cachedData = readRect(datakey, bandInfo,
+                        sourceOffsetX, sourceOffsetY, sourceStepX, sourceStepY,
+                        imgRect);
+                srcArray = cachedData.intArray;
+            }
 
-        final short[] destArray = (short[]) destBuffer.getElems();
-        if (!bandInfo.isImaginary) {
-            if (sourceStepX == 1) {
-                for(int y=0; y < imgRect.height; ++y) {
-                    int stride = y*imgRect.width;
-                    for(int x=0; x < imgRect.width; ++x) {
-                        destArray[stride+x] = (short) srcArray[stride+x];
+            final short[] destArray = (short[]) destBuffer.getElems();
+            if (!bandInfo.isImaginary) {
+                if (sourceStepX == 1) {
+                    for (int y = 0; y < imgRect.height; ++y) {
+                        int stride = y * imgRect.width;
+                        for (int x = 0; x < imgRect.width; ++x) {
+                            destArray[stride + x] = (short) srcArray[stride + x];
+                        }
+                    }
+                } else {
+                    for (int y = 0; y < imgRect.height; ++y) {
+                        int stride = y * imgRect.width;
+                        for (int x = 0; x < imgRect.width; x += sourceStepX) {
+                            destArray[stride + x] = (short) srcArray[stride + x];
+                        }
                     }
                 }
             } else {
-                for(int y=0; y < imgRect.height; ++y) {
-                    int stride = y*imgRect.width;
-                    for(int x=0; x < imgRect.width; x += sourceStepX) {
-                        destArray[stride+x] = (short) srcArray[stride+x];
+                if (sourceStepX == 1) {
+                    for (int y = 0; y < imgRect.height; ++y) {
+                        int stride = y * imgRect.width;
+                        for (int x = 0; x < imgRect.width; ++x) {
+                            destArray[stride + x] = (short) (srcArray[stride + x] >> 16);
+                        }
+                    }
+                } else {
+                    for (int y = 0; y < imgRect.height; ++y) {
+                        int stride = y * imgRect.width;
+                        for (int x = 0; x < imgRect.width; x += sourceStepX) {
+                            destArray[stride + x] = (short) (srcArray[stride + x] >> 16);
+                        }
                     }
                 }
             }
-        } else {
-            if (sourceStepX == 1) {
-                for(int y=0; y < imgRect.height; ++y) {
-                    int stride = y*imgRect.width;
-                    for(int x=0; x < imgRect.width; ++x) {
-                        destArray[stride+x] = (short) (srcArray[stride+x] >> 16);
-                    }
-                }
-            } else {
-                for(int y=0; y < imgRect.height; ++y) {
-                    int stride = y*imgRect.width;
-                    for(int x=0; x < imgRect.width; x += sourceStepX) {
-                        destArray[stride+x] = (short) (srcArray[stride+x] >> 16);
-                    }
-                }
-            }
+        } catch(Exception t) {
+            t.printStackTrace();
         }
     }
 
