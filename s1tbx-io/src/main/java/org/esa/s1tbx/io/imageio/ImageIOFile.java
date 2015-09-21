@@ -213,14 +213,18 @@ public class ImageIOFile {
 
     public int getImageWidth() throws IOException {
         if (imgWidth == 0) {
-            imgWidth = reader.getWidth(0);
+            synchronized(reader) {
+                imgWidth = reader.getWidth(0);
+            }
         }
         return imgWidth;
     }
 
     public int getImageHeight() throws IOException {
         if (imgHeight == 0) {
-            imgHeight = reader.getHeight(0);
+            synchronized(reader) {
+                imgHeight = reader.getHeight(0);
+            }
         }
         return imgHeight;
     }
