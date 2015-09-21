@@ -444,7 +444,7 @@ public final class BackGeocodingOp extends Operator {
      *          If an error occurs during computation of the target raster.
      */
     @Override
-     public synchronized void computeTileStack(Map<Band, Tile> targetTileMap, Rectangle targetRectangle, ProgressMonitor pm)
+     public void computeTileStack(Map<Band, Tile> targetTileMap, Rectangle targetRectangle, ProgressMonitor pm)
              throws OperatorException {
 
         try {
@@ -476,6 +476,9 @@ public final class BackGeocodingOp extends Operator {
                     final int lastLineIdx = firstLineIdx + mSubSwath[s].linesPerBurst - 1;
 
                     if (tyMax < firstLineIdx || ty0 > lastLineIdx) {
+                        continue;
+                    }
+                    if (tx0 >= mSubSwath[s].samplesPerBurst - 1) {
                         continue;
                     }
 
